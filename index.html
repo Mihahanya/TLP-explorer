@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="styles.css" rel="stylesheet">
+	
+	<title>Document</title>
+</head>
+
+<body>
+
+	<h2> Tractatus Logico-Philosophicus explorer </h2> 
+
+	<hr>
+
+	<textarea id="find-request"> anfosn </textarea>
+	
+	<div>
+		<ul id="view-res" style="padding-inline-start: 0;">
+			<li><span class="caret">1. Мир есть все то, что имеет место.</span>
+			<ul class="nested">
+				<li><span class="caret">1.1. Мир – совокупность фактов, а не предметов.</span>
+				<ul class="nested">
+					<li>1.11. Мир определяется фактами и тем, что все они суть факты.</li>
+					<li>1.12. Совокупность фактов определяет все то, что имеет место, а также то, что не имеет места.</li>
+					<il>1.13. Мир есть факты в логическом пространстве.</il>
+				</ul>
+				</li>
+
+				<li><span class="caret">1.2. Мир членится на факты.</span>
+				<ul class="nested">
+					<li>1.21. Всякий факт может иметь место или не иметь места, а прочее останется неизменным.</li>
+				</ul>
+				</li>
+			</ul>
+			</li>
+
+			<li><span class="caret">2. То, что имеет место – факт, – есть совокупность позиций.</span>
+			<ul class="nested">
+				<li>2.01. Позиция определяется связями между объектами (предметами, вещами).</span>
+			</ul>
+			</li>
+		</ul>
+	</div>
+
+</body>
+
+<script>
+
+function tree_to_html(tree) {
+	var res = '';
+
+	var key, count = 0;
+	for (key in tree.children) {
+		if (tree.children.hasOwnProperty(key)) {
+			const child = tree.children[key]
+			if (child == null) continue
+
+			if (child.hasOwnProperty('proposition')) {
+				
+				var number = child.proposition.number[0] + '.' + child.proposition.number.slice(1) + '. '
+				var item_text = child.proposition.english
+
+				if (child.children.length > 0) {
+					res += '<li><span class="caret">' + number + item_text + '</span><ul class="nested">'
+					res += tree_to_html(child) + '</ul></il>'
+				}
+				else {
+					res += '<li>' + number + item_text + '</il>'
+				}
+			}
+			else {
+				res += tree_to_html(child)
+			}
+		}
+	}
+
+	return res
+}
+
+fetch('./TLP.json')
+    .then((response) => response.json())
+    .then((json) => 
+	{
+		document.getElementById('view-res').innerHTML = tree_to_html(json, 'view-res')
+
+		var toggler = document.getElementsByClassName("caret");
+
+		for (var i = 0; i < toggler.length; i++) {
+			toggler[i].addEventListener("click", function() {
+				this.parentElement.querySelector(".nested").classList.toggle("active");
+				this.classList.toggle("caret-down");
+			});
+		}
+	});
+
+</script>
+
+<style>
+
+
+</style>
+
+</html>

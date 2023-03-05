@@ -1,0 +1,74 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Signika+Negative&display=swap');
+
+body {
+	/* margin: 50px 150px; */
+	margin: auto;
+	margin-top: 10px;
+	width: 90vmin;
+	
+	background-color: whitesmoke;
+	
+	color: #222;
+	font-family: 'Signika Negative', sans-serif;
+	/* text-align: justify; */
+}
+
+ul {
+	padding-inline-start: 30px;
+	list-style-type: none;
+}
+
+li {
+	margin-block: 10px;
+}
+
+.caret {
+	cursor: pointer;
+	-webkit-user-select: none; 
+	user-select: none;
+}
+
+.caret::before {
+	content: "+";
+	font-size: 14pt;
+	font-family: monospace;
+	color: gray;
+	display: inline-block;
+	width: 15px;
+}
+
+.caret-down::before {
+	content: "-";
+}
+
+.nested { display: none; }
+.active { display: block; }
+
+hr { 
+	width: 100%;
+}
+
+#view-res {
+	/* width: 50%; */
+}
+
+#find-request {
+	width: 30%;
+	max-width: 45%;
+	height: 40px;
+}
+
+#find-request:focus-visible {
+	outline: 0;
+}
+
+.proposition__image {
+    display: block;
+    width: 20vmax;
+    margin: 30px auto;
+}
+
+.proposition__image--brackets03-en {
+	width: 10vmax;
+}
