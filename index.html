@@ -1,37 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<div lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="styles.css" rel="stylesheet">
-	
-	<title>Document</title>
-</head>
+	<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 
-<body>
+	<title> TLP Explorer </title>
+</head>
 
 	<h2> Tractatus Logico-Philosophicus explorer </h2> 
 
 	<hr>
 
-	<textarea id="find-request"> anfosn </textarea>
-	
+	<div class="panel">
+		<table>
+			<tr> <th>Paragraphs</th> <th>Search request</th> </tr>
+			<tr>
+				<td> <textarea id="find-request" style="width: 5vmin; resize: horizontal;">(1-7)</textarea> </td>
+				<td> <textarea id="find-request">proposition (and) sign (or) expression (not) world</textarea> </td>
+			</tr>
+		</table>
+
+		<div style="display: flex; justify-content: flex-end; flex-wrap: wrap;">
+			<div id="lang-sel" value="eng" class="checked "/> English </div>
+			<div id="lang-sel" value="deu" class=""/> Deutsch </div>
+			<div id="lang-sel" value="rus" class=""/> Русский </div>
+		</div>
+	</div>
+
+	<hr>
+
 	<div>
 		<ul id="view-res" style="padding-inline-start: 0;">
 			<li><span class="caret">1. Мир есть все то, что имеет место.</span>
 			<ul class="nested">
 				<li><span class="caret">1.1. Мир – совокупность фактов, а не предметов.</span>
 				<ul class="nested">
-					<li>1.11. Мир определяется фактами и тем, что все они суть факты.</li>
-					<li>1.12. Совокупность фактов определяет все то, что имеет место, а также то, что не имеет места.</li>
-					<il>1.13. Мир есть факты в логическом пространстве.</il>
+					<li><span>1.11. Мир определяется фактами и тем, что все они суть факты.</span></li>
+					<li><span>1.12. Совокупность фактов определяет все то, что имеет место, а также то, что не имеет места.</span></li>
+					<il><span>1.13. Мир есть факты в логическом пространстве.</span></il>
 				</ul>
 				</li>
 
 				<li><span class="caret">1.2. Мир членится на факты.</span>
 				<ul class="nested">
-					<li>1.21. Всякий факт может иметь место или не иметь места, а прочее останется неизменным.</li>
+					<li><span>1.21. Всякий факт может иметь место или не иметь места, а прочее останется неизменным.</span></li>
 				</ul>
 				</li>
 			</ul>
@@ -39,7 +55,7 @@
 
 			<li><span class="caret">2. То, что имеет место – факт, – есть совокупность позиций.</span>
 			<ul class="nested">
-				<li>2.01. Позиция определяется связями между объектами (предметами, вещами).</span>
+				<li><span>2.01. Позиция определяется связями между объектами (предметами, вещами).</span>
 			</ul>
 			</li>
 		</ul>
@@ -47,44 +63,25 @@
 
 </body>
 
+<script src="functional.js"></script>
+
 <script>
 
-function tree_to_html(tree) {
-	var res = '';
+JSON.clone = function(obj) {
+	return JSON.parse(JSON.stringify(obj));
+};
 
-	var key, count = 0;
-	for (key in tree.children) {
-		if (tree.children.hasOwnProperty(key)) {
-			const child = tree.children[key]
-			if (child == null) continue
-
-			if (child.hasOwnProperty('proposition')) {
-				
-				var number = child.proposition.number[0] + '.' + child.proposition.number.slice(1) + '. '
-				var item_text = child.proposition.english
-
-				if (child.children.length > 0) {
-					res += '<li><span class="caret">' + number + item_text + '</span><ul class="nested">'
-					res += tree_to_html(child) + '</ul></il>'
-				}
-				else {
-					res += '<li>' + number + item_text + '</il>'
-				}
-			}
-			else {
-				res += tree_to_html(child)
-			}
-		}
-	}
-
-	return res
-}
+var tlp_json;
+var par_arr;
 
 fetch('./TLP.json')
     .then((response) => response.json())
     .then((json) => 
 	{
-		document.getElementById('view-res').innerHTML = tree_to_html(json, 'view-res')
+		tlp_json = JSON.clone(json)
+		par_arr = tree_to_par_arr(tlp_json)
+
+		document.getElementById('view-res').innerHTML = tree_to_html(json, 'eng')
 
 		var toggler = document.getElementsByClassName("caret");
 
@@ -96,11 +93,23 @@ fetch('./TLP.json')
 		}
 	});
 
+
+$(document).on('click', 'div[id="lang-sel"]', function() {      
+    $(this).addClass('checked')
+    $('div[id="lang-sel"]').not(this).removeClass('checked')
+
+	var lang = $(this).attr('value')
+
+	for (const par of par_arr) {
+		var new_text = '';
+		if (lang == 'eng') new_text = par.proposition.english
+		if (lang == 'deu') new_text = par.proposition.german
+
+		$(`span[name="${par.number}"]`).html(to_par_number(par.number) + new_text)
+	}
+});
+
+
 </script>
-
-<style>
-
-
-</style>
 
 </html>
