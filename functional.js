@@ -27,12 +27,24 @@ function tree_to_html(tree, language) {
 				if (language == 'deu') item_text = child.proposition.german
 				if (language == 'rus') item_text = child.proposition.russian
 
+				var del_tags_reg = new RegExp(/\<.*\>|\n/, 'g')
+				var translations = '<div class="translations" title="' + child.proposition.english.replaceAll(del_tags_reg, '') + '">ENG</div>' +
+								   '<div class="translations" title="' + child.proposition.german.replaceAll (del_tags_reg, '') + '">DEU</div>' +
+								   '<div class="translations" title="' + child.proposition.russian.replaceAll(del_tags_reg, '') + '">RUS</div>';
+				
+
 				if (child.children.length > 0) {
-					res += '<li><span class="caret" name="' + child.proposition.number + '">' + number + item_text + '</span><ul class="nested active">'
-					res += tree_to_html(child, language) + '</ul></il>'
+					res += '<li><span class="caret" name="' + child.proposition.number + '">' + number + item_text + '</span>'
+					res += translations
+					res += '<ul class="nested active">'
+					
+					res += tree_to_html(child, language) 
+					res += '</ul></il>'
 				}
 				else {
-					res += '<li><span name="' + child.proposition.number + '">' + number + item_text + '</span></il>'
+					res += '<li><span name="' + child.proposition.number + '">' + number + item_text + '</span>'
+					res += translations
+					res += '</il>'
 				}
 			}
 			else {
