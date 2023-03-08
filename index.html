@@ -27,7 +27,8 @@
 		<div style="display: flex; justify-content: flex-end; flex-wrap: wrap;">
 			<div id="lang-sel" value="eng" class="checked "/> English </div>
 			<div id="lang-sel" value="deu" class=""/> Deutsch </div>
-			<div id="lang-sel" value="rus" class=""/> Русский </div>
+			<div id="lang-sel" value="rus" class=""/> Русский <br>
+				<p style="font-size: 0.45em; margin-top: 0; font-style: italic;">(перевод Добросельский)</p></div>
 		</div>
 	</div>
 
@@ -100,10 +101,13 @@ $(document).on('click', 'div[id="lang-sel"]', function() {
 
 	var lang = $(this).attr('value')
 
+	console.log(par_arr.length)
+
 	for (const par of par_arr) {
 		var new_text = '';
 		if (lang == 'eng') new_text = par.proposition.english
 		if (lang == 'deu') new_text = par.proposition.german
+		if (lang == 'rus') new_text = par.proposition.russian
 
 		$(`span[name="${par.number}"]`).html(to_par_number(par.number) + new_text)
 	}

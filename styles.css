@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Signika+Negative&display=swap');
 
 :root {
-	--under-color: #104046;
+	--under-color: #735ca8;
 }
 
 body {
@@ -46,6 +46,13 @@ li {
 	content: "-";
 }
 
+.caret-has-down {
+	background-color: #54cc3370;
+	display: block;
+	margin: -3px;
+	padding: 3px;
+}
+
 .nested { display: none; }
 .active { display: block; }
 
@@ -57,11 +64,19 @@ hr {
 	/* width: 50%; */
 }
 
-.proposition__image {
+img {
     display: block;
-    width: 20vmax;
-    margin: 30px auto;
+    width: auto;
+    max-width: 20vmax;
+    /* display: inline; */
+	margin: 30px auto;
+	border-radius: 7px;
 }
+
+img[src="images/000018.png"] {
+	display: inline;
+	margin: 0;
+} 
 
 .proposition__image--brackets03-en {
 	width: 10vmax;
@@ -79,7 +94,7 @@ hr {
 	padding: 10px 12px;
 	
 	height: 20px; min-height: 20px;
-	width: 50vmin; 
+	width: 40vmin; 
 	max-width: 500px; min-width: 50px;
 	
 	background-color: #00000000;

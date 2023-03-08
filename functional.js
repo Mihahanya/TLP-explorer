@@ -25,9 +25,10 @@ function tree_to_html(tree, language) {
 				var item_text;
 				if (language == 'eng') item_text = child.proposition.english
 				if (language == 'deu') item_text = child.proposition.german
+				if (language == 'rus') item_text = child.proposition.russian
 
 				if (child.children.length > 0) {
-					res += '<li><span class="caret" name="' + child.proposition.number + '">' + number + item_text + '</span><ul class="nested">'
+					res += '<li><span class="caret" name="' + child.proposition.number + '">' + number + item_text + '</span><ul class="nested active">'
 					res += tree_to_html(child, language) + '</ul></il>'
 				}
 				else {
