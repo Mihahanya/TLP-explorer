@@ -4,9 +4,12 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="styles.css" rel="stylesheet">
 	<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+	
+	<link href="styles.css" rel="stylesheet">
+
 	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/underscore@1.13.6/underscore-umd-min.js"></script>
 
 	<title> TLP Explorer </title>
 </head>
@@ -19,8 +22,8 @@
 		<table>
 			<tr> <th>Paragraphs</th> <th>Search request</th> </tr>
 			<tr>
-				<td> <textarea id="find-request" style="width: 8vmin; resize: horizontal;">(1-7)</textarea> </td>
-				<td> <textarea id="find-request">proposition (and) sign (or) expression (not) world</textarea> </td>
+				<td> <textarea id="number-pattern" style="width: 8vmin; resize: horizontal;">(1-7)</textarea> </td>
+				<td> <textarea id="search-request">proposition (and) sign (or) expression (not) world</textarea> </td>
 			</tr>
 		</table>
 
@@ -40,6 +43,13 @@
 		</ul>
 	</div>
 
+	<hr>
+
+	<footer>
+		<a href="https://en.wikipedia.org/wiki/Tractatus_Logico-Philosophicus">Treatise</a> by <a href="https://en.wikipedia.org/wiki/Ludwig_Wittgenstein">Ludwig Wittgenstein</a> <br> 
+		This wonderful site by <a href="https://github.com/mihahanya">Mihahanya</a>
+	</footer>
+
 </body>
 
 <script src="functional.js"></script>
@@ -52,6 +62,8 @@ JSON.clone = function(obj) {
 
 var tlp_json;
 var par_arr;
+var founded_pahrs = [];
+var lang = 'eng'
 
 fetch('./TLP.json')
     .then((response) => response.json())
@@ -73,13 +85,12 @@ fetch('./TLP.json')
 	});
 
 
-$(document).on('click', 'div[id="lang-sel"]', function() {      
+$(document).on('click', 'div[id="lang-sel"]', function() {   
+	// TODO: update for search   
     $(this).addClass('checked')
     $('div[id="lang-sel"]').not(this).removeClass('checked')
 
-	var lang = $(this).attr('value')
-
-	console.log(par_arr.length)
+	lang = $(this).attr('value')
 
 	for (const par of par_arr) {
 		var new_text = '';
@@ -90,6 +101,32 @@ $(document).on('click', 'div[id="lang-sel"]', function() {
 		$(`span[name="${par.number}"]`).html(to_par_number(par.number) + new_text)
 	}
 });
+
+
+$('#search-request').keyup(_.debounce(() => {
+	var request = $('#search-request').val()
+	
+	$('span.paragraph').removeClass('found-match')
+	$('li').removeClass('found-below')
+	
+	if (request == '') {
+		$('span.paragraph').css('color', '#222')
+		return
+	}
+	else {
+		$('span').attr('style', '')
+	}
+
+	founded_pahrs = search_paragraphs(par_arr, request, lang)
+
+	var r = ''
+	for (const p of founded_pahrs) r += 'span[name="' + p + '"],'
+
+	$(r.slice(0, -1))
+		.addClass('found-match')
+		.parent().parents('li').addClass('found-below')
+
+}, 300))
 
 
 </script>
