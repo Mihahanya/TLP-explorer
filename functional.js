@@ -35,7 +35,7 @@ function tree_to_html(tree, language) {
 				
 
 				if (child.children.length > 0) {
-					res += '<li><span class="paragraph caret" name="' + child.proposition.number + '">' + number + item_text + '</span>'
+					res += `<li name="${child.proposition.number}"><span class="paragraph caret" name="${child.proposition.number}">${number + item_text}</span>`
 					res += translations
 					res += '<ul class="nested">'
 					// res += '<ul class="nested active">'
@@ -106,3 +106,51 @@ function search_paragraphs(pars, expr, lang) {
 	return numbers
 }
 
+
+function exec_field_expr(expr) 
+{
+	function replace_enums(str) {
+		var new_str = ''
+		for (var i=0; i < str.length-1; i++) {
+			if (str[i+1] == '-') {
+				if (+str[i] > +str[i+2] || !/^\d\d$/.test(str[i]+str[i+2])) return null
+
+				for (var n=+str[i]; n <= +str[i+2]; n++) 
+					new_str += n
+				
+				i += 2
+			}
+			else {
+				new_str += str[i]
+			}
+		}
+		return new_str + str[str.length-1]
+	}
+
+	if (expr.length > 2 && expr[expr.length-1] == '.') expr = expr.slice(0, -1) 	// 1.21. -> 1.21
+
+	expr = replace_enums(expr) 		// 3.26(1-3) -> 3.26(123)
+	if (expr == null) return null 
+
+	var number_match = expr.match(/^\d\.(\d+)?/) 			// 3.26(123) -> 3.26
+	var enums_match = expr.match(/\(((\d[\s\/]*)+)\)$/) 	// 3.26(123) -> (123)
+	
+	if (number_match == null && enums_match == null) return null
+	
+	if (number_match == null) number_match = ['']
+	if (enums_match == null) enums_match = ['', ['']]
+
+	if (number_match[0].length + enums_match[0].length != expr.length) return null
+		
+	var search_field_nums = []
+	for (const n of enums_match[1]) {
+		if (n != ' ' && n != '/') {
+			var number;
+			if (number_match == null) number = ''
+			else number = number_match[0].replace('.', '')
+			search_field_nums.push(number + n)
+		}
+	}
+
+	return search_field_nums
+}
