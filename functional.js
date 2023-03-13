@@ -44,7 +44,7 @@ function tree_to_html(tree, language) {
 					res += '</ul></il>'
 				}
 				else {
-					res += '<li><span class="paragraph" name="' + child.proposition.number + '">' + number + item_text + '</span>'
+					res += `<li name="${child.proposition.number}"><span class="paragraph" name="${child.proposition.number}">${number + item_text}</span>`
 					res += translations
 					res += '</il>'
 				}
@@ -57,6 +57,7 @@ function tree_to_html(tree, language) {
 
 	return res
 }
+
 
 function tree_to_par_arr(tree) {
 	var res = []
@@ -91,7 +92,10 @@ function tree_to_par_arr(tree) {
 	return res
 }
 
+
 function search_paragraphs(pars, expr, lang) {
+	if (expr == '') return [];
+
 	var numbers = []
 
 	for (const par of pars) {

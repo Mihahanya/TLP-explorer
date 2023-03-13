@@ -63,7 +63,37 @@ JSON.clone = function(obj) {
 var tlp_json;
 var par_arr;
 var founded_pahrs = [];
+var search_field = ['1', '2', '3', '4', '5', '6', '7'];
 var lang = 'eng'
+
+
+function update_display() {
+	console.log(founded_pahrs, search_field)
+	
+	$('span[class^="paragraph"]').removeClass('found-match')
+	$('li').removeClass('found-below').removeClass('search-view')
+
+	for (const n of search_field) {
+		$('li[name="' + n + '"]').addClass('search-view')
+		console.log(n)
+	}
+
+	var r = ''
+	for (const p of founded_pahrs) {
+		for (const s of search_field) {
+			if (p.startsWith(s)) {
+				r += 'span[name="' + p + '"],'
+				break
+			}
+		}
+	}
+
+	$(r.slice(0, -1))
+		.addClass('found-match')
+		.parent().parents('li').addClass('found-below')
+
+}
+
 
 fetch('./TLP.json')
     .then((response) => response.json())
@@ -82,8 +112,9 @@ fetch('./TLP.json')
 				this.classList.toggle("caret-down");
 			});
 		}
-	});
 
+		update_display()
+	});
 
 $(document).on('click', 'div[id="lang-sel"]', function() {   
 	// TODO: update for search   
@@ -100,42 +131,29 @@ $(document).on('click', 'div[id="lang-sel"]', function() {
 
 		$(`span[name="${par.number}"]`).html(to_par_number(par.number) + new_text)
 	}
+
+	founded_pahrs = search_paragraphs(par_arr, $('#search-request').val(), lang)
+	update_display()
 });
 
 
 $('#search-request').keyup(_.debounce(() => {
 	var request = $('#search-request').val()
-	
-	$('span.paragraph').removeClass('found-match')
-	$('li').removeClass('found-below')
-	
-	if (request == '') {
-		$('span.paragraph').css('color', '#222')
-		return
-	}
-	else {
-		$('span').attr('style', '')
-	}
 
 	founded_pahrs = search_paragraphs(par_arr, request, lang)
 
-	var r = ''
-	for (const p of founded_pahrs) r += 'span[name="' + p + '"],'
-
-	$(r.slice(0, -1))
-		.addClass('found-match')
-		.parent().parents('li').addClass('found-below')
+	update_display()
 
 }, 300))
 
 
-$('#number-pattern').keyup(_.debounce(() => {
+$('#number-pattern').keyup(_.debounce( () => {
 	var $this = $('#number-pattern')
 	var number_expr = $this.val()
 
-	var search_field_nums = exec_field_expr(number_expr)
+	search_field = exec_field_expr(number_expr)
 
-	if (search_field_nums == null) {
+	if (search_field == null) {
 		$this.addClass('invalid-input')
 		return;
 	}
@@ -143,10 +161,7 @@ $('#number-pattern').keyup(_.debounce(() => {
 		$this.removeClass('invalid-input')
 	}
 
-	$('li').removeClass('search-view')
-	for (const n of search_field_nums) {
-		$('li[name=' + n + ']').addClass('search-view')
-	}
+	update_display()
 
 }, 100))
 
