@@ -96,6 +96,10 @@ function tree_to_par_arr(tree) {
 function search_paragraphs(pars, expr, lang) {
 	if (expr == '') return [];
 
+	expr = expr.toLowerCase()
+
+	search_tokens = expr.split(/\s?\{|\}\s?/)
+
 	var numbers = []
 
 	for (const par of pars) {
@@ -103,8 +107,23 @@ function search_paragraphs(pars, expr, lang) {
 		if (lang == 'eng') text = par.proposition.english_clear
 		if (lang == 'deu') text = par.proposition.german_clear
 		if (lang == 'rus') text = par.proposition.russian_clear
+		text = text.toLowerCase()
 
-		if (text.search(expr.toLowerCase()) != -1) numbers.push(par.number)
+		var checking_expr = expr
+		for (const i in search_tokens) {
+			if (i % 2 != 0) continue
+			checking_expr = checking_expr.replace(search_tokens[i], +(text.search(search_tokens[i]) != -1))
+		}
+		checking_expr = checking_expr
+			.replaceAll('{and', '*').replaceAll('{or', '+').replaceAll('not}', '!')
+			.replaceAll(new RegExp(/\{|\}/, 'g'), '')
+
+		try {
+			if (eval(checking_expr)) numbers.push(par.number)
+		}
+		catch {
+			return null
+		}
 	}
 
 	return numbers
