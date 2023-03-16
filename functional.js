@@ -29,9 +29,9 @@ function tree_to_html(tree, language) {
 
 				var del_tags_reg = new RegExp(/\<.*\>|\n/, 'g')
 				var translations = 
-					'<div class="translations" title="' + child.proposition.english.replaceAll(del_tags_reg, '') + '">ENG</div>' +
-					'<div class="translations" title="' + child.proposition.german.replaceAll (del_tags_reg, '') + '">DEU</div>' +
-					'<div class="translations" title="' + child.proposition.russian.replaceAll(del_tags_reg, '') + '">RUS</div>';
+					'<div class="translations" data-tooltip="' + child.proposition.english.replaceAll(del_tags_reg, '') + '">ENG</div>' +
+					'<div class="translations" data-tooltip="' + child.proposition.german.replaceAll (del_tags_reg, '') + '">DEU</div>' +
+					'<div class="translations" data-tooltip="' + child.proposition.russian.replaceAll(del_tags_reg, '') + '">RUS</div>';
 				
 
 				if (child.children.length > 0) {
@@ -97,8 +97,13 @@ function search_paragraphs(pars, expr, lang) {
 	if (expr == '') return [];
 
 	expr = expr.toLowerCase()
+		.replaceAll(new RegExp(/\{and/, 'g'), '{AND')
+		.replaceAll(new RegExp(/\{or/, 'g'), '{OR')
+		.replaceAll(new RegExp(/not\}/, 'g'), 'NOT}')
 
-	search_tokens = expr.split(/\s?\{|\}\s?/)
+	search_tokens = expr.split(/\s?[\{\}\(\)]\s?/)
+		.filter(e => e != '')
+		.filter((_, i) => i % 2 == 0) 	// world {and} ( the {or} not ) {or} is -> ['world', 'the', 'not', 'is']
 
 	var numbers = []
 
@@ -110,13 +115,15 @@ function search_paragraphs(pars, expr, lang) {
 		text = text.toLowerCase()
 
 		var checking_expr = expr
-		for (const i in search_tokens) {
-			if (i % 2 != 0) continue
-			checking_expr = checking_expr.replace(search_tokens[i], +(text.search(search_tokens[i]) != -1))
+		for (const t of search_tokens) {
+			checking_expr = checking_expr.replace(t, +(text.search(t) != -1))
 		}
 		checking_expr = checking_expr
-			.replaceAll('{and', '*').replaceAll('{or', '+').replaceAll('not}', '!')
+			.replaceAll('{AND', '*').replaceAll('{OR', '+').replaceAll('NOT}', '!')
 			.replaceAll(new RegExp(/\{|\}/, 'g'), '')
+
+		// All of that ^ is translating some like:
+		// world {and} ( the {or} not ) {or} is -> 0 * ( 1 + 0 ) + 1
 
 		try {
 			if (eval(checking_expr)) numbers.push(par.number)

@@ -3,6 +3,7 @@
 
 :root {
 	--under-color: #607d8b;
+	--black: #222;
 	/* --under-color: #009688; */
 }
 
@@ -60,7 +61,7 @@ li {
     margin-left: -5px;
     padding-left: 5px;
 
-	/* color: #222  !important; */
+	/* color: var(--black)  !important; */
 }
 
 .search-view * {
@@ -68,7 +69,7 @@ li {
 	/* padding-left: 14px; */
     /* margin-left: -2px; */
     /* border-left-style: dashed; */
-	color:#222 !important;
+	color:var(--black) !important;
 }
 
 .found-below::before {
@@ -127,14 +128,17 @@ textarea {
 	
 	background-color: #00000000;
 	border: 1px solid;
-	box-shadow: 5px 5px 15px 0px #0000001f;
+	box-shadow: 5px 5px 15px 0 #0000001f;
 
 	text-align: left;
 	font-size: .95rem;
 	font-family: 'Signika Negative', sans-serif;
+
+	transition: 0.2s;
 }
 textarea:focus-visible {
 	outline: 0;
+	box-shadow: 3px 3px 15px 0 #00000040;
 	border: 1px solid var(--under-color);
 }
 
@@ -150,7 +154,7 @@ textarea:focus-visible {
 }
 
 .checked {
-	color: #222 !important;
+	color: var(--black) !important;
 	text-decoration: underline;
 }
 
@@ -171,17 +175,60 @@ th {
 
 footer {
 	font-size: 0.85em;
-	color: #222;
+	color: var(--black);
 	margin-bottom: 20px;
 }
 
 a:visited {
-	color: #222;
+	color: var(--black);
 }
 
 a:-webkit-any-link {
-    color: #222;
+    color: var(--black);
     cursor: pointer;
     text-decoration: underline;
 }
 
+button {
+	background: #00000000;
+	border-radius: 0;
+	border: 1px solid var(--black);
+	padding: 5px 13px;
+	margin: 2px;
+	font-size: 0.9em;
+	font-family: 'Signika Negative', sans-serif;
+	box-shadow: 0 5px 10px 0 #0000001f;
+
+	transition: 0.2s;
+}
+button:hover {
+	box-shadow: 0 2px 7px 0 #0000005f;
+	background-color: #ececec;
+}
+button:active {
+	box-shadow: 0 0px 5px 0 #0000005f;
+	background-color: #dadada;
+}
+
+[data-tooltip]::after {
+	content: attr(data-tooltip);
+    pointer-events: none;
+    opacity: 0;
+    transition: 0.4s;
+
+    position: absolute;
+    transform: translate(-20%, 0);
+	margin-top: 30px;
+    padding: 5px;
+    
+	font-family: 'Signika Negative', sans-serif;
+	font-size: 1em;
+	background-color: whitesmoke;
+    
+    box-shadow: 5px 5px 15px 0 #0000002f;
+    border: 2px solid var(--under-color);
+	outline: none;
+}
+[data-tooltip]:hover::after {
+	opacity: 1;
+}
