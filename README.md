@@ -12,3 +12,5 @@ fact {and} proposition {and not} ( is {or} that )
 ```
 To check the match of the expression with the text of the paragraph, you need to put false in the expression instead of search tokens if there is no token in the text, otherwise true, and calculate the expression.
 Some like: `1 AND 0 AND NOT ( 0 OR 1 )` or just `1 * 0 * !(0 + 1)`
+
+Try [here](https://mihahanya.github.io/TLP-explorer/)!
